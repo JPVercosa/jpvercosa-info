@@ -1,0 +1,129 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+  --bg: #f6f8fb;
+  --card: #ffffff;
+  --ink: #111827; // slate-900-ish
+  --muted: #6b7280; // slate-500-ish
+  --accent: #0f766e; // teal-700-ish
+  --accent-2: #14b8a6; // teal-500-ish
+  --border: #e5e7eb;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.container { max-width: 1140px; margin: 0 auto; padding: 16px; padding-top: 72px; }
+
+.header {
+  position: fixed; top: 0; left: 0; width: 100%; z-index: 20;
+  background: rgba(255,255,255,0.8); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  max-width: 1140px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.badge {
+  height: 36px; width: 36px; border-radius: 12px;
+  background: var(--accent); color: white; display: grid; place-items: center; font-weight: 600;
+}
+.nav { display: none; gap: 16px; }
+@media (min-width: 768px) { .nav { display: flex; } }
+
+/* Generic grid utility used elsewhere on the page */
+.grid {
+  display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 20px;
+}
+@media (min-width: 1024px) {
+  .grid { grid-template-columns: 1fr 380px; }
+}
+
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); padding: 18px;
+}
+.card h2 { margin: 0 0 8px; font-size: 20px; }
+.muted { color: var(--muted); }
+
+/* ---- Chat styles ---- */
+.chat-box { /* no global sticky here; handled per-breakpoint below */ }
+.chat-log {
+  height: 460px; overflow: auto; display: flex; flex-direction: column; gap: 6px;
+}
+.bubble { border-radius: 14px; padding: 10px 12px; max-width: 85%; }
+.bubble.user { align-self: flex-end; background: var(--accent); color: white; }
+.bubble.bot  { align-self: flex-start; background: #eef2f7; color: #0f172a; }
+.input-row { display: flex; gap: 8px; }
+.input-row input {
+  flex: 1; border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; font-size: 14px;
+}
+.button {
+  border: none; border-radius: 12px; background: var(--accent); color: #fff;
+  padding: 10px 14px; font-weight: 600; cursor: pointer;
+}
+.button:disabled { opacity: .6; cursor: default; }
+.small { font-size: 12px; }
+
+.section + .section { margin-top: 16px; }
+.list { padding-left: 18px; }
+
+.footer { text-align: center; font-size: 12px; color: var(--muted); padding: 24px 16px; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px; /* Height of the fixed header plus some spacing */
+}
+
+/* ----------------------------------------------------------
+   MAIN LAYOUT: <main class="container side-by-side">
+   Mobile: 1 column, CHAT on top
+   ≥768px: 2 columns, CV left / Chat right (sticky)
+----------------------------------------------------------- */
+main.container.side-by-side {
+  display: grid;
+  gap: 20px;
+  margin-top: 20px;
+
+  /* Mobile-first: single column with chat on top */
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "chat"
+    "cv";
+}
+
+.cv-box   { grid-area: cv; }
+.chat-box { grid-area: chat; }
+
+/* Mobile: chat not sticky, friendlier height */
+main.container.side-by-side .chat-box { position: static; }
+@media (max-width: 767.98px) {
+  .chat-log { max-height: 60vh; }
+}
+
+/* Tablet & Desktop */
+@media (min-width: 768px) {
+  main.container.side-by-side {
+    grid-template-columns: minmax(0, 1fr) clamp(320px, 32vw, 400px);
+    grid-template-areas: "cv chat";
+    align-items: start;
+  }
+
+  /* Re-enable sticky chat on larger screens */
+  main.container.side-by-side .chat-box {
+    position: sticky;
+    top: 88px;
+  }
+
+  .chat-log { max-height: 70vh; }
+}

@@ -1,0 +1,18 @@
+<div class="card">
+<h2>Ask my CV Bot</h2>
+<div class="muted small">Chat with a bot that knows this CV. No page reloads.</div>
+
+
+<div class="chat-log" style="margin-top:10px">
+<div *ngFor="let m of messages()" class="bubble" [class.user]="m.who==='user'" [class.bot]="m.who==='bot'">{{ m.text }}</div>
+</div>
+
+
+<div style="margin-top:10px" class="input-row">
+<input [ngModel]="input()" (ngModelChange)="input.set($event)" placeholder="Ask about experience, skills, availability…" (keydown.enter)="send()" />
+<button class="button" [disabled]="sending()" (click)="send()">Send</button>
+</div>
+
+
+<div class="small muted" style="margin-top:6px">API: {{ chat.apiSendEndpoint }}</div>
+</div>

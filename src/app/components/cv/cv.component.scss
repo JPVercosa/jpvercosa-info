@@ -1,0 +1,4 @@
+.job { margin-top: 14px; }
+.job-head { display:flex; align-items:center; justify-content: space-between; gap: 8px; }
+.job-title { font-weight: 600; }
+@media (min-width: 640px) { .skills-grid { grid-template-columns: repeat(3, 1fr); } }

@@ -1,0 +1,33 @@
+<h2>{{ title }}</h2>
+  <ng-container [ngSwitch]="type">
+    <ul *ngSwitchCase="'experience'" class="list">
+      <li *ngFor="let item of items">
+        <strong>{{ item.role }}</strong><br>
+        {{ item.company }} • {{ item.period }}
+        <ul>
+          <li *ngFor="let detail of item.details">{{ detail }}</li>
+        </ul>
+        <br>
+      </li>
+    </ul>
+    <ul *ngSwitchCase="'skills'" class="skills-grid">
+      <li *ngFor="let item of items">
+        <p><strong>{{ item.category }}</strong></p>
+        <p>{{ item.skills }}</p>
+      </li>
+    </ul>
+    <ul *ngSwitchCase="'languages'" class="languages-list">
+      <li *ngFor="let item of items" class="language-item">
+        <span class="fi fis" [ngClass]="'fi-' + item.flag"></span>
+        <span class="lang-name">{{ item.name }}</span>
+        <span class="lang-level">{{ item.level }}</span>
+        <span class="lang-visual">
+          <span *ngFor="let v of [1,2,3,4,5]" class="dot" [class.filled]="v <= item.visual"></span>
+        </span>
+      </li>
+    </ul>
+    <ul *ngSwitchDefault class="list">
+      <li *ngFor="let item of items">{{ item }}</li>
+    </ul>
+  </ng-container>
+

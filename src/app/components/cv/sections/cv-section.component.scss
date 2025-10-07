@@ -1,0 +1,45 @@
+/* Add section-specific styles here if needed */
+.skills-grid { display:grid; grid-template-columns: 1fr; gap: 12px; }
+.skills-grid p { margin: 0; }
+
+.languages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.language-item {
+  display: grid;
+  grid-template-columns: 32px minmax(100px, 140px) minmax(100px, 120px) minmax(80px, 100px);
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+}
+.flag {
+  font-size: 24px;
+}
+.lang-name {
+  font-weight: 600;
+}
+.lang-level {
+  color: var(--muted);
+  font-size: 14px;
+  text-align: left;
+}
+.lang-visual {
+  display: flex;
+  gap: 2px;
+  justify-content: flex-start;
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  display: inline-block;
+}
+.dot.filled {
+  background: var(--accent);
+}
