@@ -22,6 +22,39 @@
   box-shadow: none;
 }
 
+/* Collapsible bar styling */
+.reasoning-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e6e7ea;
+  cursor: pointer;
+}
+.reasoning-bar:focus { outline: 2px solid rgba(20,184,166,0.15); }
+.caret { font-size: 12px; transform: rotate(0deg); transition: transform .15s ease; }
+.caret.open { transform: rotate(180deg); }
+.reasoning-title { font-weight: 600; font-size: 13px; color: #0f172a; }
+.reasoning-state { margin-left: auto; }
+.live { background: #dcfce7; color: #065f46; padding: 2px 6px; border-radius: 999px; font-size: 11px; }
+
+/* small spinner for live streaming */
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(0,0,0,0.12);
+  border-top-color: var(--accent-2);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* make reasoning visually separated from answer */
 .message-text { margin-top: 6px; }
 

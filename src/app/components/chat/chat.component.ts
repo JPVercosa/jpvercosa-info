@@ -170,7 +170,8 @@ export class ChatComponent {
           rendered: '',
           reasoning: '',
           renderedReasoning: '',
-          reasoningVisible: false,
+          // open reasoning by default for streaming responses
+          reasoningVisible: true,
         },
       ]);
       const onChunk = (chunk: {
@@ -259,6 +260,21 @@ export class ChatComponent {
       ]);
     } finally {
       this.sending.set(false);
+      // auto-close the reasoning of the last bot message shortly after streaming ends
+      setTimeout(() => {
+        this.messages.update((arr) => {
+          if (arr.length === 0) return arr;
+          const lastIndex = arr.length - 1;
+          const last = arr[lastIndex];
+          if (!last || last.who !== 'bot') return arr;
+          // only auto-close if there is reasoning content and it's currently visible
+          if (last.reasoning && last.reasoningVisible) {
+            const updated = { ...last, reasoningVisible: false };
+            return [...arr.slice(0, lastIndex), updated];
+          }
+          return arr;
+        });
+      }, 1800);
     }
   }
 

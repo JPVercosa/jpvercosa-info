@@ -26,6 +26,16 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/flag-icons/flags",
+                "output": "assets/flags"
+              },
+              {
+                "glob": "flag-icons.min.css",
+                "input": "node_modules/flag-icons/css",
+                "output": "assets/flags"
               }
             ],
             "styles": [

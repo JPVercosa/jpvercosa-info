@@ -20,12 +20,19 @@
 			<div *ngFor="let s of suggestions" class="bubble suggestion" (click)="useSuggestion(s)" style="cursor:pointer">{{ s }}</div>
 		</div>
 <div *ngFor="let m of messages(); let i = index" class="bubble" [class.user]="m.who==='user'" [class.bot]="m.who==='bot'">
-	<div *ngIf="m.reasoning !== undefined || (m.who === 'bot' && sending())" class="reasoning">
-		<div class="reasoning-header">
-			<button class="button small" (click)="toggleReasoning(i)">{{ m.reasoningVisible ? 'Hide reasoning' : 'Show reasoning' }}</button>
+		<div *ngIf="m.reasoning !== undefined || (m.who === 'bot' && sending())" class="reasoning">
+			<div class="reasoning-bar" role="button" tabindex="0" (click)="toggleReasoning(i)" (keydown.enter)="toggleReasoning(i)">
+				<div class="caret" [class.open]="m.reasoningVisible">▾</div>
+				<div class="reasoning-title">Reasoning</div>
+						<div class="reasoning-state">
+							<!-- show spinner only for the last message while streaming -->
+							<ng-container *ngIf="sending() && i === (messages().length - 1)">
+								<span class="spinner" aria-hidden></span>
+							</ng-container>
+						</div>
+			</div>
+			<div *ngIf="m.reasoningVisible" class="reasoning-content"><div [innerHTML]="m.renderedReasoning"></div></div>
 		</div>
-		<div *ngIf="m.reasoningVisible" class="reasoning-content"><div [innerHTML]="m.renderedReasoning"></div></div>
-	</div>
 		<div class="message-text"><div [innerHTML]="m.rendered"></div></div>
 </div>
 </div>
