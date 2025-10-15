@@ -1,0 +1,39 @@
+.reasoning {
+  background: #f3f4f6; /* lighter grey */
+  border: 1px solid #e6e7ea;
+  padding: 8px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  color: #374151; /* slate-700 */
+}
+.reasoning-content {
+  white-space: pre-wrap;
+  font-size: 13px;
+  color: #4b5563; /* slightly muted */
+  margin-top: 8px;
+}
+.reasoning-header { display: flex; justify-content: flex-start; }
+.button.small {
+  padding: 6px 8px;
+  font-size: 12px;
+  background: #fff;
+  color: var(--accent);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+/* make reasoning visually separated from answer */
+.message-text { margin-top: 6px; }
+
+/* ensure bubbles keep spacing */
+.bubble { display: block; }
+
+.suggestions { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px }
+.bubble.suggestion { background: #e6fffa; color: #064e3b; padding: 8px 12px; border-radius: 999px; cursor: pointer; max-width: none }
+.bubble.suggestion:hover { filter: brightness(.98); transform: translateY(-1px); }
+
+.suggestions-header { margin-bottom: 6px; }
+
+/* header clear button positioning fixes (card has padding) */
+.card { position: relative; }
+.header-actions { position: absolute; right: 18px; top: 18px; }

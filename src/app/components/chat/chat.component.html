@@ -1,18 +1,41 @@
 <div class="card">
 <h2>Ask my CV Bot</h2>
 <div class="muted small">Chat with a bot that knows this CV. No page reloads.</div>
+<div class="header-actions">
+	<button class="button" title="Clear chat" (click)="clearChat()" style="margin-left:8px">
+		<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+			<path d="M3 6h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+			<path d="M8 6v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+			<path d="M10 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+			<path d="M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+			<path d="M9 6V4h6v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+		</svg>
+	</button>
+</div>
 
 
 <div class="chat-log" style="margin-top:10px">
-<div *ngFor="let m of messages()" class="bubble" [class.user]="m.who==='user'" [class.bot]="m.who==='bot'">{{ m.text }}</div>
+	<div *ngIf="chatAvailable() && showSuggestions()" class="suggestions-header small muted">Suggested questions</div>
+		<div *ngIf="chatAvailable() && showSuggestions() && !chat.chatId" class="suggestions" style="margin-top:8px">
+			<div *ngFor="let s of suggestions" class="bubble suggestion" (click)="useSuggestion(s)" style="cursor:pointer">{{ s }}</div>
+		</div>
+<div *ngFor="let m of messages(); let i = index" class="bubble" [class.user]="m.who==='user'" [class.bot]="m.who==='bot'">
+	<div *ngIf="m.reasoning !== undefined || (m.who === 'bot' && sending())" class="reasoning">
+		<div class="reasoning-header">
+			<button class="button small" (click)="toggleReasoning(i)">{{ m.reasoningVisible ? 'Hide reasoning' : 'Show reasoning' }}</button>
+		</div>
+		<div *ngIf="m.reasoningVisible" class="reasoning-content"><div [innerHTML]="m.renderedReasoning"></div></div>
+	</div>
+		<div class="message-text"><div [innerHTML]="m.rendered"></div></div>
 </div>
-
+</div>
 
 <div style="margin-top:10px" class="input-row">
-<input [ngModel]="input()" (ngModelChange)="input.set($event)" placeholder="Ask about experience, skills, availability…" (keydown.enter)="send()" />
-<button class="button" [disabled]="sending()" (click)="send()">Send</button>
+	<input [ngModel]="input()" (ngModelChange)="input.set($event)" placeholder="Ask about experience, skills, availability…" (keydown.enter)="send()" [disabled]="!chatAvailable() || sending()" />
+	<button class="button" [disabled]="!chatAvailable() || sending()" (click)="send()">Send</button>
 </div>
+
+<!-- duplicate suggestions removed; suggestions are shown inside the chat log only -->
 
 
 <div class="small muted" style="margin-top:6px">API: {{ chat.apiSendEndpoint }}</div>
-</div>
