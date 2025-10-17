@@ -48,6 +48,12 @@ a:hover { text-decoration: underline; }
 @media (min-width: 1024px) {
   .grid { grid-template-columns: 1fr 380px; }
 }
+@media (max-width: 767px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
 
 .card {
   background: var(--card); border: 1px solid var(--border);
@@ -90,9 +96,9 @@ html {
    ≥768px: 2 columns, CV left / Chat right (sticky)
 ----------------------------------------------------------- */
 main.container.side-by-side {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 20px;
-  margin-top: 20px;
 
   /* Mobile-first: single column with chat on top */
   grid-template-columns: 1fr;
@@ -101,8 +107,27 @@ main.container.side-by-side {
     "cv";
 }
 
-.cv-box   { grid-area: cv; }
-.chat-box { grid-area: chat; }
+.cv-box {
+  order: 2;
+}
+
+.chat-box {
+  order: 1;
+}
+
+@media (min-width: 768px) {
+  main.container.side-by-side {
+    flex-direction: row;
+  }
+
+  .cv-box {
+    order: 1;
+  }
+
+  .chat-box {
+    order: 2;
+  }
+}
 
 /* Mobile: chat not sticky, friendlier height */
 main.container.side-by-side .chat-box { position: static; }
@@ -125,4 +150,12 @@ main.container.side-by-side .chat-box { position: static; }
   }
 
   .chat-log { max-height: 70vh; }
+}
+
+@media (max-width: 767px) {
+  .container-main.side-by-side {
+    grid-template-areas:
+      "chat"
+      "cv";
+  }
 }

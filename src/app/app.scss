@@ -1,16 +1,23 @@
 /* Uses global variables from styles.scss; only component-specific tweaks here if needed */
-.container-main { 
-  max-width: 90%; 
-  margin: 0 auto; 
-  padding: 16px; 
-  padding-top: 72px; 
+.container-main {
+  max-width: 90%;
+  margin: 0 auto;
+  padding: 16px;
+  padding-top: 72px;
 }
 
 .side-by-side {
   display: flex;
   gap: 2rem;
-  align-items: flex-start;
-  min-height: calc(100vh - 72px); /* Adjust for footer */
+  align-items: flex-start;   /* don't stretch columns */
+}
+
+@media (max-width: 767px) {
+  .side-by-side {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0;
+  }
 }
 
 .cv-box {
@@ -18,8 +25,43 @@
   min-width: 0;
 }
 
-.chat-box {
+/* sticky right column, bounded by viewport */
+.chat-box{
   flex: 1 1 40%;
   min-width: 300px;
-  // max-width: 500px;
+
+  position: sticky;
+  top: 88px;                         /* header + padding */
+  align-self: flex-start;            /* no match-height stretching */
+
+  /* the visible container height; keeps it “contained” */
+  height: calc(100vh - 110px);
+  max-height: calc(100vh - 110px);
+}
+
+/* inner scroll so the card stays visually boxed */
+.chat-box .card{
+  height: 100%;
+  overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 767px) {
+  .chat-box {
+    position: static;
+    flex: 1 1 auto;
+    min-width: 0;
+    height: auto;
+    max-height: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .chat-box,
+  .cv-box {
+    padding: 2px;
+    width: 100%;
+    box-sizing: border-box;
+  }
 }

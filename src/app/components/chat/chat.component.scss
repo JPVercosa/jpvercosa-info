@@ -77,11 +77,16 @@
 .status-dot.unhealthy { background: #dc2626; box-shadow: 0 0 0 4px rgba(239,68,68,0.08); }
 .api-text { font-size: 12px; color: #6b7280; }
 
-.card {
-  position: fixed;
-  overflow-y: auto;
-}
-.chat-box {
-  height: calc(100vh - 110px); /* Align with card height */
-  overflow-y: auto;
+@media (max-width: 767px) {
+  .reasoning {
+    padding: 4px;
+    font-size: 12px;
+  }
+  .reasoning-bar {
+    padding: 4px;
+    gap: 4px;
+  }
+  .reasoning-title {
+    font-size: 12px;
+  }
 }
