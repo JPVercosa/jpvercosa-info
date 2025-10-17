@@ -1,6 +1,18 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 
+// Add at top of ChatService (below imports)
+class ApiUnavailableError extends Error {
+  status: number;
+  body?: string;
+  constructor(message: string, status = 0, body?: string) {
+    super(message);
+    this.name = 'ApiUnavailableError';
+    this.status = status;
+    this.body = body;
+  }
+}
+
 @Injectable()
 export class ChatService {
   private base = environment.apiBaseUrl.replace(/\/$/, '');
@@ -34,9 +46,15 @@ export class ChatService {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
+
+    // Not OK → throw explicit error so UI can react
     if (!resp.ok || !resp.body) {
-      const txt = await resp.text();
-      throw new Error(`HTTP ${resp.status}: ${txt}`);
+      const txt = await resp.text().catch(() => '');
+      throw new ApiUnavailableError(
+        `Chat API error (HTTP ${resp.status}).`,
+        resp.status,
+        txt || undefined
+      );
     }
 
     const reader = resp.body.getReader();
@@ -48,18 +66,16 @@ export class ChatService {
       while ((idx = buffer.indexOf('\n\n')) !== -1) {
         const chunk = buffer.slice(0, idx).trim();
         buffer = buffer.slice(idx + 2);
-        // SSE messages can have multiple lines; we look for lines starting with "data:"
         for (const line of chunk.split(/\r?\n/)) {
           if (line.startsWith('data:')) {
             const payload = line.slice(5).trim();
             try {
               const parsed = JSON.parse(payload);
-              // handle initial chat_id control message
               if (parsed?.type === 'chat_id' && parsed.chat_id) {
                 this.chatId = parsed.chat_id;
                 try {
                   if (this.chatId) localStorage.setItem('chat_id', this.chatId);
-                } catch (e) {}
+                } catch {}
                 continue;
               }
               if (typeof parsed === 'string') {
@@ -74,7 +90,7 @@ export class ChatService {
               } else {
                 onChunk({ type: 'other', text: JSON.stringify(parsed) });
               }
-            } catch (e) {
+            } catch {
               onChunk({ type: 'other', text: payload });
             }
           }
@@ -93,7 +109,6 @@ export class ChatService {
         // final flush
         buffer = buffer.trim();
         if (buffer) {
-          // treat remaining as a single chunk
           if (buffer.startsWith('data:')) {
             for (const line of buffer.split(/\r?\n/)) {
               if (line.startsWith('data:')) onChunk({ type: 'other', text: line.slice(5).trim() });
@@ -102,15 +117,20 @@ export class ChatService {
             onChunk({ type: 'other', text: buffer });
           }
         }
+      } catch (err) {
+        // Stream died mid-flight → surface as API unavailable
+        throw new ApiUnavailableError('Connection lost while streaming from Chat API.', 0);
       } finally {
-        reader.releaseLock();
+        try {
+          reader.releaseLock();
+        } catch {}
       }
     };
 
-    // return the pump promise so callers can await completion
     return pump().catch((err) => {
-      console.error('streamMessage error', err);
-      throw err;
+      // Normalize unexpected errors to ApiUnavailableError for the caller
+      if (err instanceof ApiUnavailableError) throw err;
+      throw new ApiUnavailableError('Unexpected error talking to Chat API.', 0);
     });
   }
 

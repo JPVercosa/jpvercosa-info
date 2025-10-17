@@ -41,24 +41,12 @@ export class ChatComponent {
 
   // Load chat history on component initialization
   async ngOnInit() {
-    // 1) check health
+    // 1) one-time health check
     const healthy = await this.chat.healthCheck();
-    // reflect in UI
     this.apiHealthy.set(healthy);
-    // periodically refresh health in background every 30s
-    try {
-      setInterval(async () => {
-        try {
-          const ok = await this.chat.healthCheck();
-          this.apiHealthy.set(ok);
-        } catch (e) {
-          this.apiHealthy.set(false);
-        }
-      }, 30_000);
-    } catch (e) {}
+
     if (!healthy) {
       this.chatAvailable.set(false);
-      // provide rendered HTML so the message appears in the bubble (template uses m.rendered)
       const parsed = marked.parse(
         'Service is currently unavailable. Please contact me to restore access.'
       ) as string | Promise<string>;
@@ -74,13 +62,12 @@ export class ChatComponent {
       return;
     }
 
-    // healthy: if we have a chatId already, try to restore conversation
+    // 2) healthy: if we have a chatId already, try to restore conversation
     if (this.chat.chatId) {
       try {
         const data = await this.chat.fetchChatHistory();
         if (!data || !data.messages) return;
 
-        // Map server messages into UI messages. We need to group reasoning entries with the following assistant normal message.
         const ui: any[] = [];
         let pendingReasoning = '';
 
@@ -90,12 +77,10 @@ export class ChatComponent {
           const message_type = m.message_type; // 'normal' | 'reasoning'
 
           if (message_type === 'reasoning' || role === 'reasoning') {
-            // accumulate reasoning; will attach to next assistant message
             pendingReasoning += content;
             continue;
           }
 
-          // normal message
           if (role === 'user') {
             const parsed = marked.parse(content || '') as string | Promise<string>;
             const rendered = await Promise.resolve(parsed);
@@ -114,16 +99,13 @@ export class ChatComponent {
             }
             ui.push(entry);
           } else {
-            // fallback: treat as user
             const parsed = marked.parse(content || '') as string | Promise<string>;
             const rendered = await Promise.resolve(parsed);
             ui.push({ who: 'user', text: content, rendered });
           }
         }
 
-        // apply to signal
         this.messages.set(ui);
-        // show suggestions only if there are no messages
         this.showSuggestions.set(ui.length === 0);
       } catch (e) {
         console.warn('Failed to load chat history', e);
@@ -143,7 +125,8 @@ export class ChatComponent {
         ]);
       }
     } else {
-      // healthy and no chat id -> allow user to start a new chat (chatAvailable stays true)
+      // healthy and no chat id -> allow user to start a new chat
+      this.showSuggestions.set(true);
     }
   }
 
@@ -281,11 +264,9 @@ export class ChatComponent {
         });
       };
       await this.chat.streamMessage(text, onChunk);
-    } catch (e) {
-      this.messages.update((arr) => [
-        ...arr,
-        { who: 'bot', text: 'Oops, failed to reach the API. Check CORS/HTTPS.' },
-      ]);
+    } catch (e: any) {
+      // Show a dedicated backend-down message if the API failed or stream died.
+      await this.showBackendDownMessage();
     } finally {
       this.sending.set(false);
       // auto-close the reasoning of the last bot message shortly after streaming ends
@@ -302,7 +283,7 @@ export class ChatComponent {
           }
           return arr;
         });
-      }, 1800);
+      }, 1500);
     }
   }
 
@@ -312,6 +293,32 @@ export class ChatComponent {
       if (!m) return arr;
       const updated = { ...m, reasoningVisible: !m.reasoningVisible };
       return [...arr.slice(0, index), updated, ...arr.slice(index + 1)];
+    });
+  }
+
+  private async showBackendDownMessage() {
+    this.apiHealthy.set(false);
+    this.chatAvailable.set(false);
+
+    const markdown = [
+      '**The chat backend became unavailable.**',
+      '',
+      'Please reload the page to re-check API status.',
+    ].join('\n');
+
+    const parsed = marked.parse(markdown) as string | Promise<string>;
+    const rendered = await Promise.resolve(parsed);
+
+    // If the last message is the placeholder bot bubble we created for streaming,
+    // replace it with the error message; otherwise, append a new one.
+    this.messages.update((arr) => {
+      const last = arr[arr.length - 1];
+      const errorMsg = { who: 'bot' as const, text: markdown, rendered };
+      if (last && last.who === 'bot' && !last.text && !last.rendered) {
+        // replace empty placeholder
+        return [...arr.slice(0, -1), errorMsg];
+      }
+      return [...arr, errorMsg];
     });
   }
 }
