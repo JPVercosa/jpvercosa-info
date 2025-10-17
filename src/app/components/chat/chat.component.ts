@@ -27,10 +27,13 @@ export class ChatComponent {
   input = signal('');
   sending = signal(false);
   chatAvailable = signal(true);
+  // API health status: true = healthy, false = unhealthy/null when unknown
+  apiHealthy = signal<boolean | null>(null);
   suggestions = [
-    'Tell me a story in 10 words',
-    'Summarize my CV in one sentence',
-    'What are my top skills based on the CV?',
+    "Summarize João Pedro's CV in one sentence",
+    "What are João Pedro's top skills based on the CV?",
+    'What is this website about?',
+    'How can I contact João Pedro?',
   ];
   showSuggestions = signal(true);
 
@@ -40,13 +43,32 @@ export class ChatComponent {
   async ngOnInit() {
     // 1) check health
     const healthy = await this.chat.healthCheck();
+    // reflect in UI
+    this.apiHealthy.set(healthy);
+    // periodically refresh health in background every 30s
+    try {
+      setInterval(async () => {
+        try {
+          const ok = await this.chat.healthCheck();
+          this.apiHealthy.set(ok);
+        } catch (e) {
+          this.apiHealthy.set(false);
+        }
+      }, 30_000);
+    } catch (e) {}
     if (!healthy) {
       this.chatAvailable.set(false);
+      // provide rendered HTML so the message appears in the bubble (template uses m.rendered)
+      const parsed = marked.parse(
+        'Service is currently unavailable. Please contact me to restore access.'
+      ) as string | Promise<string>;
+      const rendered = await Promise.resolve(parsed);
       this.messages.update((arr) => [
         ...arr,
         {
           who: 'bot',
           text: 'Service is currently unavailable. Please contact me to restore access.',
+          rendered,
         },
       ]);
       return;

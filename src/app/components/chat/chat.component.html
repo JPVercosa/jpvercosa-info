@@ -1,6 +1,6 @@
 <div class="card">
-<h2>Ask my CV Bot</h2>
-<div class="muted small">Chat with a bot that knows this CV. No page reloads.</div>
+<h2>Ask my ChatBot</h2>
+<div class="muted small">Chat with a bot that knows my CV.</div>
 <div class="header-actions">
 	<button class="button" title="Clear chat" (click)="clearChat()" style="margin-left:8px">
 		<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
@@ -45,4 +45,7 @@
 <!-- duplicate suggestions removed; suggestions are shown inside the chat log only -->
 
 
-<div class="small muted" style="margin-top:6px">API: {{ chat.apiSendEndpoint }}</div>
+<div class="small muted api-status" style="margin-top:6px" aria-live="polite">
+	<span class="api-text">API Status: </span>
+		<span class="status-dot" [class.healthy]="apiHealthy() === true" [class.unhealthy]="apiHealthy() === false" [attr.title]="apiHealthy() === true ? 'API healthy' : apiHealthy() === false ? 'API unavailable' : 'Checking API...'" aria-hidden="true"></span>
+</div>

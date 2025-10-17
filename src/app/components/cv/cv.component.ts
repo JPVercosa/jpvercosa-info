@@ -44,6 +44,11 @@ export class CvComponent {
       ],
     },
   ];
+  aboutItems = [
+    'Use my personal Chatbot to know more about me and my experiences!',
+    'Feel free to ask questions about my skills, education, publications, contact info, languages, and courses.',
+    'The chatbot is powered by a custom-trained AI model that leverages the content of this CV to provide accurate and relevant answers.',
+  ];
 
   skillsItems = [
     { category: 'AI & ML', skills: 'GenAI, NLP, LLMs, RAG, MLOps, Fine‑Tuning, XAI' },
