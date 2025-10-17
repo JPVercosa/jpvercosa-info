@@ -180,7 +180,13 @@ export class ChatComponent {
     // hide suggestions once the user sends a question
     this.showSuggestions.set(false);
     this.input.set('');
-    this.messages.update((arr) => [...arr, { who: 'user', text }]);
+
+    // Parse the user's message to set the rendered property
+    const rendered = marked.parse(text) as string | Promise<string>;
+    const resolvedRendered = await Promise.resolve(rendered);
+
+    this.messages.update((arr) => [...arr, { who: 'user', text, rendered: resolvedRendered }]);
+
     this.sending.set(true);
     try {
       // add an empty bot message and append chunks to it as they arrive
