@@ -68,7 +68,6 @@
 .suggestions-header { margin-bottom: 6px; }
 
 /* header clear button positioning fixes (card has padding) */
-.card { position: relative; }
 .header-actions { position: absolute; right: 18px; top: 18px; }
 
 /* API status indicator */
@@ -77,3 +76,12 @@
 .status-dot.healthy { background: #16a34a; box-shadow: 0 0 0 4px rgba(16,185,129,0.08); }
 .status-dot.unhealthy { background: #dc2626; box-shadow: 0 0 0 4px rgba(239,68,68,0.08); }
 .api-text { font-size: 12px; color: #6b7280; }
+
+.card {
+  position: fixed;
+  overflow-y: auto;
+}
+.chat-box {
+  height: calc(100vh - 110px); /* Align with card height */
+  overflow-y: auto;
+}

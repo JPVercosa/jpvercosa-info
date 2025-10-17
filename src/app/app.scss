@@ -1,9 +1,16 @@
 /* Uses global variables from styles.scss; only component-specific tweaks here if needed */
+.container-main { 
+  max-width: 90%; 
+  margin: 0 auto; 
+  padding: 16px; 
+  padding-top: 72px; 
+}
 
 .side-by-side {
   display: flex;
   gap: 2rem;
   align-items: flex-start;
+  min-height: calc(100vh - 72px); /* Adjust for footer */
 }
 
 .cv-box {
@@ -14,5 +21,5 @@
 .chat-box {
   flex: 1 1 40%;
   min-width: 300px;
-  max-width: 500px;
+  // max-width: 500px;
 }

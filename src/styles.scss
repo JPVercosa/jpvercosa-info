@@ -57,9 +57,8 @@ a:hover { text-decoration: underline; }
 .muted { color: var(--muted); }
 
 /* ---- Chat styles ---- */
-.chat-box { /* no global sticky here; handled per-breakpoint below */ }
 .chat-log {
-  height: 460px; overflow: auto; display: flex; flex-direction: column; gap: 6px;
+  height: calc(100vh - 300px); overflow: auto; display: flex; flex-direction: column; gap: 6px;
 }
 .bubble { border-radius: 14px; padding: 10px 12px; max-width: 85%; }
 .bubble.user { align-self: flex-end; background: var(--accent); color: white; }
